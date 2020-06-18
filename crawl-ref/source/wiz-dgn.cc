@@ -357,11 +357,11 @@ void wizard_map_level()
     for (rectangle_iterator ri(BOUNDARY_BORDER - 1); ri; ++ri)
     {
         update_item_at(*ri, false, true);
-        show_update_at(*ri, LAYER_ITEMS);
+        show_update_at(*ri);
 
 #ifdef USE_TILE
         tiles.update_minimap(*ri);
-        tile_draw_map_cell(*ri, true);
+        tile_draw_map_cell(*ri, true, LAYER_ITEMS);
 #endif
 #ifdef USE_TILE_WEB
         tiles.mark_for_redraw(*ri);

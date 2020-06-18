@@ -834,7 +834,7 @@ void tile_floor_halo(dungeon_feature_type target, tileidx_t tile)
         }
 }
 
-void tile_draw_map_cells()
+void tile_draw_map_cells(layers_type layers)
 {
     for (int cy = 0; cy < env.tile_fg.height(); cy++)
         for (int cx = 0; cx < env.tile_fg.width(); cx++)
@@ -843,7 +843,7 @@ void tile_draw_map_cells()
             const coord_def gc = show2grid(ep);
 
 #ifdef USE_TILE
-            tile_draw_map_cell(gc, true);
+            tile_draw_map_cell(gc, true, layers);
 #endif
 #ifdef USE_TILE_WEB
             tiles.mark_for_redraw(gc);
@@ -1109,7 +1109,7 @@ void tile_draw_rays(bool reset_count)
         num_tile_rays = 0;
 }
 
-void tile_draw_map_cell(const coord_def& gc, bool foreground_only)
+void tile_draw_map_cell(const coord_def& gc, bool foreground_only, layers_type layers)
 {
     if (!foreground_only)
         env.tile_bk_bg(gc) = _get_floor_bg(gc);
@@ -1121,12 +1121,15 @@ void tile_draw_map_cell(const coord_def& gc, bool foreground_only)
     }
 
     const map_cell& cell = env.map_knowledge(gc);
+    const bool show_monsters = !!(layers & LAYER_MONSTERS);
+    const bool show_items = !!(layers & LAYER_ITEMS);
+    const bool show_clouds = !!(layers & LAYER_CLOUDS);
 
-    if (cell.invisible_monster())
+    if (cell.invisible_monster() && show_monsters)
         _tile_place_invisible_monster(gc);
-    else if (cell.monsterinfo())
+    else if (cell.monsterinfo() && show_monsters)
         _tile_place_monster(gc, *cell.monsterinfo());
-    else if (cell.item())
+    else if (cell.item() && show_items)
     {
         if (feat_is_stair(cell.feat()))
             _tile_place_item_marker(gc, *cell.item());
@@ -1137,7 +1140,7 @@ void tile_draw_map_cell(const coord_def& gc, bool foreground_only)
         env.tile_bk_fg(gc) = 0;
 
     // Always place clouds now they have their own layer
-    if (cell.cloud() != CLOUD_NONE)
+    if (cell.cloud() != CLOUD_NONE && show_clouds)
         _tile_place_cloud(gc, *cell.cloudinfo());
     else
         env.tile_bk_cloud(gc) = 0;

@@ -85,7 +85,7 @@ DEF_BITFIELD(layers_type, layer_type, 5);
 constexpr layers_type LAYERS_ALL = LAYER_MONSTERS | LAYER_PLAYER
                                  | LAYER_ITEMS | LAYER_CLOUDS;
 
-void show_init(layers_type layers = LAYERS_ALL);
+void show_init();
 void update_item_at(const coord_def &gp, bool detected = false, bool wizard = false);
-void show_update_at(const coord_def &gp, layers_type layers = LAYERS_ALL);
+void show_update_at(const coord_def &gp);
 void show_update_emphasis();

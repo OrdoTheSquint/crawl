@@ -1362,7 +1362,7 @@ void viewwindow(bool show_updates, bool tiles_only, animation *a)
             mcache.clear_nonref();
 #endif
 
-        if (show_updates || _layers != LAYERS_ALL)
+        if (show_updates)
         {
             if (!is_map_persistent())
                 ash_detect_portals(false);
@@ -1377,9 +1377,11 @@ void viewwindow(bool show_updates, bool tiles_only, animation *a)
             // should be called directly on changing location, or something
             // like that...
             if (you.on_current_level)
-                show_init(_layers);
-            tile_draw_map_cells();
+                show_init();
         }
+
+        if (show_updates || _layers != LAYERS_ALL)
+            tile_draw_map_cells(_layers);
 
         if (show_updates)
             player_view_update();
@@ -1416,10 +1418,6 @@ void viewwindow(bool show_updates, bool tiles_only, animation *a)
             you.flash_colour = BLACK;
             you.flash_where = 0;
         }
-
-        // Reset env.show if we munged it.
-        if (_layers != LAYERS_ALL)
-            show_init();
     }
 }
 

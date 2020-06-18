@@ -262,7 +262,7 @@ void update_item_at(const coord_def &gp, bool detected, bool wizard)
     env.map_knowledge(gp).set_item(get_item_info(eitem), more_items);
 }
 
-static void _update_cloud(cloud_struct& cloud)
+static void _update_cloud(const cloud_struct& cloud)
 {
     const coord_def gp = cloud.pos;
 
@@ -488,9 +488,8 @@ static void _update_monster(monster* mons)
 /**
  * Updates the map knowledge at a location.
  * @param gp      The location to update.
- * @param layers  The information layers to display.
 **/
-void show_update_at(const coord_def &gp, layers_type layers)
+void show_update_at(const coord_def &gp)
 {
     if (you.see_cell(gp))
         env.map_knowledge(gp).clear_data();
@@ -503,32 +502,27 @@ void show_update_at(const coord_def &gp, layers_type layers)
 
     if (in_bounds(gp))
     {
-        if (layers & LAYER_MONSTERS)
-        {
-            monster* mons = monster_at(gp);
-            if (mons && mons->alive())
-                _update_monster(mons);
-            else if (env.map_knowledge(gp).flags & MAP_INVISIBLE_UPDATE)
-                _mark_invisible_at(gp);
-        }
+        monster* mons = monster_at(gp);
+        if (mons && mons->alive())
+            _update_monster(mons);
+        else if (env.map_knowledge(gp).flags & MAP_INVISIBLE_UPDATE)
+            _mark_invisible_at(gp);
 
-        if (layers & LAYER_CLOUDS)
-            if (cloud_struct* cloud = cloud_at(gp))
-                _update_cloud(*cloud);
+        if (const cloud_struct* cloud = cloud_at(gp))
+            _update_cloud(*cloud);
 
-        if (layers & LAYER_ITEMS)
-            update_item_at(gp);
+        update_item_at(gp);
     }
 }
 
-void show_init(layers_type layers)
+void show_init()
 {
     clear_terrain_visibility();
     if (crawl_state.game_is_arena())
     {
         for (rectangle_iterator ri(crawl_view.vgrdc, LOS_MAX_RANGE); ri; ++ri)
         {
-            show_update_at(*ri, layers);
+            show_update_at(*ri);
             // Invis indicators and update flags not used in Arena.
             env.map_knowledge(*ri).flags &= ~MAP_INVISIBLE_UPDATE;
         }
@@ -540,7 +534,7 @@ void show_init(layers_type layers)
     vector <coord_def> update_locs;
     for (radius_iterator ri(you.pos(), you.xray_vision ? LOS_NONE : LOS_DEFAULT); ri; ++ri)
     {
-        show_update_at(*ri, layers);
+        show_update_at(*ri);
         update_locs.push_back(*ri);
     }
 

@@ -7124,7 +7124,7 @@ static void _draw_tiles()
     for (rectangle_iterator ri(coord_def(0, 0), coord_def(GXM-1, GYM-1));
          ri; ++ri)
     {
-        tile_draw_map_cell(*ri);
+        tile_draw_map_cell(*ri, false);
     }
 #endif
 }
