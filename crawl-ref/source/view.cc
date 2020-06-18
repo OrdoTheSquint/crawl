@@ -906,6 +906,12 @@ void view_update_at(const coord_def &pos)
         return;
 
     show_update_at(pos);
+#ifdef USE_TILE
+    tile_draw_map_cell(pos, true);
+#endif
+#ifdef USE_TILE_WEB
+    tiles.mark_for_redraw(pos);
+#endif
 
 #ifndef USE_TILE_LOCAL
     if (!env.map_knowledge(pos).visible())
@@ -1372,6 +1378,7 @@ void viewwindow(bool show_updates, bool tiles_only, animation *a)
             // like that...
             if (you.on_current_level)
                 show_init(_layers);
+            tile_draw_map_cells();
         }
 
         if (show_updates)

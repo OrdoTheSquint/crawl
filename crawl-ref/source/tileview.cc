@@ -834,6 +834,23 @@ void tile_floor_halo(dungeon_feature_type target, tileidx_t tile)
         }
 }
 
+void tile_draw_map_cells()
+{
+    for (int cy = 0; cy < env.tile_fg.height(); cy++)
+        for (int cx = 0; cx < env.tile_fg.width(); cx++)
+        {
+            const coord_def ep(cx, cy);
+            const coord_def gc = show2grid(ep);
+
+#ifdef USE_TILE
+            tile_draw_map_cell(gc, true);
+#endif
+#ifdef USE_TILE_WEB
+            tiles.mark_for_redraw(gc);
+#endif
+        }
+}
+
 #ifdef USE_TILE
 static tileidx_t _get_floor_bg(const coord_def& gc)
 {
